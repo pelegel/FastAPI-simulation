@@ -6,6 +6,7 @@ import json
 import threading
 from typing import Dict
 import uuid
+from accelerate import init_empty_weights, load_checkpoint_and_dispatch
 
 # Free up CUDA memory
 import torch
@@ -33,11 +34,12 @@ quant_config = BitsAndBytesConfig(
 print("Loading model...")
 model = Gemma3ForConditionalGeneration.from_pretrained(
     model_id,                            
-    torch_dtype=torch.bfloat16,            # Default dtype for unquantized parameters or operations
-    device_map="auto",                    
-    quantization_config=quant_config
-
+    torch_dtype=torch.bfloat16,              # Default dtype for unquantized parameters or operations
+    device_map="auto",           
+    quantization_config=quant_config,
+    attn_implementation="flash_attention_2"  # Enable Flash Attention for speed
 ).eval()
+
 
 processor = AutoProcessor.from_pretrained(model_id, padding_side="left")
 tokenizer = processor.tokenizer
