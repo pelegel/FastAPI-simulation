@@ -39,8 +39,9 @@ model = Gemma3ForConditionalGeneration.from_pretrained(
 
 ).eval()
 
-tokenizer = AutoTokenizer.from_pretrained(model_id)
 processor = AutoProcessor.from_pretrained(model_id, padding_side="left")
+tokenizer = processor.tokenizer
+
 
 with open("model_dtypes.txt", "w") as f:
     for name, param in model.named_parameters():
