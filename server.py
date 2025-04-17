@@ -105,8 +105,10 @@ async def generate(request: Request):
     threading.Thread(target=background_generate).start()
 
     async def stream_response():
+        output = ""
         for token in streamer:
             if token.strip():  # skip empty tokens
+                output += token
                 yield token
         # Save full reply to history
         conversations[session_id].append({
